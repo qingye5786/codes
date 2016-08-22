@@ -2,14 +2,16 @@
 /**
  * 工具类
  */
-class Utils {
+class Utils 
+{
 	/**
 	 * 获取post数据
 	 * @param string $var_name
 	 * @return string false
 	 */
-	public static function postVar($var_name = NULL) {
-		if(!$var_name) {
+	public static function postVar($var_name = NULL) 
+	{
+		if (!$var_name) {
 			return self::daddslashes($_POST);
 		}
 		if(array_key_exists($var_name, $_POST)) {
@@ -24,7 +26,8 @@ class Utils {
 	 * @param int $filter
 	 * @return string $data
 	 */
-	public static function daddslashes($data, $filter = 0) {
+	public static function daddslashes($data, $filter = 0) 
+	{
 		if(!is_array($data) && !is_object($data)) {
 			MAGIC_QUOTES_GPC && $data = stripslashes($data);
 			return $filter ?htmlspecialchars(trim($data)) : $data;
@@ -45,7 +48,8 @@ class Utils {
 	 *
 	 * @return mixed|null|string
 	 */
-	public static function dump($var, $echo=true, $label=null, $strict=true) {
+	public static function dump($var, $echo=true, $label=null, $strict=true) 
+	{
 	    $label = ($label === null) ? '' : rtrim($label) . ' ';
 	    if (!$strict) {
 	        if (ini_get('html_errors')) {
@@ -75,7 +79,8 @@ class Utils {
      * @param $url $before 提示信息前面内容
      * @return mixed $ch 资源
      */
-    public static function getContent($url, $before='') {
+    public static function getContent($url, $before='') 
+	{
         $ch = curl_init();
         curl_setopt($ch,CURLOPT_URL,$url);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
@@ -97,8 +102,10 @@ class Utils {
      * @param string $dir 文件保存路径
      * @param int $type 获取图片方式 0:readfile else:curl
      * @param string $filename 保存图片的新文件名称
+     * @return string $filename;
      */
-    public static function getImage($url, $dir='./', $type=0, $filename=''){
+    public static function getImage($url, $dir='./', $type=0, $filename='')
+	{
         if($url == '') {
             return false;
         }
@@ -138,4 +145,56 @@ class Utils {
         fclose($fp2);
         return $filename;
     }
+
+	/**
+	 * 获取IP地址
+	 *
+	 * @return string
+	 */
+	public static function getIp() 
+	{
+		static $ip = '';
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if (isset($_SERVER['HTTP_CDN_SRC_IP'])) {
+			$ip = $_SERVER['HTTP_CDN_SRC_IP'];
+		} elseif (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP'])) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif(isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND preg_match_all('#\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}#s', $_SERVER['HTTP_X_FORWARDED_FOR'], $matches)) {
+			foreach ($matches[0] AS $xip) {
+				if (!preg_match('#^(10|172\.16|192\.168)\.#', $xip)) {
+					$ip = $xip;
+					break;
+				}
+			}
+		}
+		return $ip;
+	}
+
+	/**
+	 * 是否base64编码
+	 *
+	 * @param $str
+	 *
+	 * @return bool
+	 */
+	public static function isBase64($str)
+	{
+		if(!is_string($str)){
+			return false;
+		}
+		return $str == base64_encode(base64_decode($str));
+	}
+
+	/**
+	 * 判断字符串是否存在字符串中
+	 *
+	 * @param $string
+	 * @param $find
+	 *
+	 * @return bool
+	 */
+	public static function strExists($string, $find)
+	{
+		return !(strpos($string, $find) === FALSE);
+	}
 }
