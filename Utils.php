@@ -4,6 +4,8 @@
  */
 class Utils 
 {
+	public static $encoding = 'UTF-8'; // 默认字符串
+	
 	/**
 	 * 获取post数据
 	 * @param string $var_name
@@ -197,4 +199,301 @@ class Utils
 	{
 		return !(strpos($string, $find) === FALSE);
 	}
+	//---------------------------------- 字符串 ------------------------------------
+	
+	
+	
+	
+	
+	
+	//----------------------------------- 数组 -------------------------------------
+	//----------------------------------- 数组 -------------------------------------
+	//----------------------------------- 数组 -------------------------------------
+	//----------------------------------- 数组 -------------------------------------
+	//----------------------------------- 数组 -------------------------------------
+
+	//----------------------------------- 数组 -------------------------------------
+	
+	/**
+	 * 从数组中删除重复.
+	 *
+	 * @param array $array
+	 * @param bool  $keepKeys
+	 * @return array
+	 */
+	public static function arrayDeleteUnique($array, $keepKeys = false)
+	{
+		if ($keepKeys) {
+			$array = array_unique($array);
+
+		} else {
+			// 这是比内置array_unique()更快的版本。
+			// http://stackoverflow.com/questions/8321620/array-unique-vs-array-flip
+			// http://php.net/manual/en/function.array-unique.php
+			$array = array_keys(array_flip($array));
+		}
+
+		return $array;
+	}
+
+	/**
+	 * 检查键是否存在于数组中
+	 *
+	 * @param string $key
+	 * @param mixed  $array
+	 * @param bool   $returnValue
+	 * @return mixed
+	 */
+	public static function arrayCheckIsExistsKey($key, $array, $returnValue = false)
+	{
+		$isExists = array_key_exists((string)$key, (array)$array);
+
+		if ($returnValue) {
+			if ($isExists) {
+				return $array[$key];
+			}
+
+			return null;
+		}
+
+		return $isExists;
+	}
+
+	/**
+	 * 检查值是否存在于数组中
+	 *
+	 * @param string $value
+	 * @param mixed  $array
+	 * @param bool   $returnKey
+	 * @return mixed
+	 *
+	 * @SuppressWarnings(PHPMD.ShortMethodName)
+	 */
+	public static function arrayCheckIsExistsValue($value, array $array, $returnKey = false)
+	{
+		$inArray = in_array($value, $array, true);
+
+		if ($returnKey) {
+			if ($inArray) {
+				return array_search($value, $array, true);
+			}
+
+			return null;
+		}
+
+		return $inArray;
+	}
+
+	/**
+	 * 返回数组中的第一个元素的值
+	 *
+	 * @param  array $array
+	 * @return mixed
+	 */
+	public static function arrayReturnFirstValue(array $array)
+	{
+		return reset($array);
+	}
+
+	/**
+	 * 返回数组中的最后一个元素的值
+	 *
+	 * @param  array $array
+	 * @return mixed
+	 */
+	public static function arrayReturnLastValue(array $array)
+	{
+		return end($array);
+	}
+
+	/**
+	 * 返回数组中的第一个元素的键
+	 *
+	 * @param  array $array
+	 * @return int|string
+	 */
+	public static function arrayReturnFirstKey(array $array)
+	{
+		reset($array);
+		return key($array);
+	}
+
+	/**
+	 * 返回数组中的最后一个元素的键
+	 *
+	 * @param  array $array
+	 * @return int|string
+	 */
+	public static function arrayReturnLastKey(array $array)
+	{
+		end($array);
+		return key($array);
+	}
+
+	/**
+	 * 自定义规则清除数组
+	 *
+	 * @param array $haystack
+	 * @return array
+	 */
+	public static function arrayClean($haystack)
+	{
+		return array_filter($haystack);
+	}
+
+	/**
+	 * 在序列化Json之前清除数组中无效的参数
+	 *
+	 * @param array $array
+	 * @return array
+	 */
+	public static function arrayCleanBeforeJson(array $array)
+	{
+		foreach ($array as $key => $value) {
+			if (is_array($value)) {
+				$array[$key] = self::arrayCleanBeforeJson($array[$key]);
+			}
+
+			if ($array[$key] === '' || is_null($array[$key])) {
+				unset($array[$key]);
+			}
+		}
+
+		return $array;
+	}
+
+	/**
+	 * 检查是否为关联数组
+	 *
+	 * @param $array
+	 * @return bool
+	 */
+	public static function arrayIsTypeAssoc($array)
+	{
+		return array_keys($array) !== range(0, count($array) - 1);
+	}
+	
+	/**
+     * 通过字段获取值数组的值在数组或者对象中
+     *
+     * @param array  $arrayList
+     * @param string $fieldName
+     * @return array
+     */
+    public static function arrayGetField($arrayList, $fieldName = 'id')
+    {
+        $result = array();
+
+        if (!empty($arrayList) && is_array($arrayList)) {
+            foreach ($arrayList as $option) {
+                if (is_array($option)) {
+                    $result[] = $option[$fieldName];
+
+                } elseif (is_object($option)) {
+                    if (isset($option->{$fieldName})) {
+                        $result[] = $option->{$fieldName};
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+	
+	/**
+     * 按另一个数组的键对一个数组进行排序
+     *
+     * @param array $array
+     * @param array $orderArray
+     * @return array
+     */
+    public static function arraySortByArray(array $array, array $orderArray)
+    {
+        return array_merge(array_flip($orderArray), $array);
+    }
+	
+	/**
+     * 给数组中的每个键增加前缀
+     *
+     * @param array  $array
+     * @param string $prefix
+     * @return array
+     */
+    public static function arrayAddEachKey(array $array, $prefix)
+    {
+        $result = array();
+
+        foreach ($array as $key => $item) {
+            $result[$prefix . $key] = $item;
+        }
+
+        return $result;
+    }
+
+    /**
+     * 将关联数组转为注释风格的索引数组
+     *
+     * @param array $data
+     * @return string
+     */
+    public static function arrayToComment(array $data)
+    {
+        $result = array();
+        foreach ($data as $key => $value) {
+            $result[] = $key . ': ' . $value . ';';
+        }
+
+        return implode(PHP_EOL, $result);
+    }
+	
+	/**
+     * 包含参数到一个数组中，如果已经是数组除外
+     *
+     * @example
+     *   Arr.wrap(null)      # => []
+     *   Arr.wrap([1, 2, 3]) # => [1, 2, 3]
+     *   Arr.wrap(0)         # => [0]
+     *
+     * @param mixed $object
+     * @return array
+     */
+    public static function arrayWrap($object)
+    {
+        if (is_null($object)) {
+            return array();
+        } elseif (is_array($object) && !self::arrayIsTypeAssoc($object)) {
+            return $object;
+        }
+
+        return array($object);
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
